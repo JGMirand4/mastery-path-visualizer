@@ -6,6 +6,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useRoadmap } from '@/contexts/RoadmapContext';
 
 interface LineViewProps {
   stacks: Stack[];
@@ -16,6 +17,7 @@ const LineView: React.FC<LineViewProps> = ({ stacks }) => {
   const isMobile = useIsMobile();
   const [scrollPosition, setScrollPosition] = useState(0);
   const [maxScroll, setMaxScroll] = useState(0);
+  const { isDarkMode } = useRoadmap();
   
   // Update scroll information
   const updateScrollInfo = () => {
@@ -79,7 +81,7 @@ const LineView: React.FC<LineViewProps> = ({ stacks }) => {
     return (
       <div className="relative min-h-[500px] px-4 py-10">
         {/* Vertical Line */}
-        <div className="vertical-timeline-line glow-line-animation"></div>
+        <div className={`vertical-timeline-line ${isDarkMode ? 'glow-line-animation' : ''}`}></div>
         
         {/* Nodes */}
         <div className="flex flex-col items-center gap-32 relative z-10">
@@ -114,7 +116,7 @@ const LineView: React.FC<LineViewProps> = ({ stacks }) => {
             variant="outline"
             size="icon"
             onClick={() => scrollTimeline('left')}
-            className="rounded-full bg-background/30 backdrop-blur-md border-primary/40 shadow-lg"
+            className="rounded-full bg-card/30 backdrop-blur-md border-primary/40 shadow-lg"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -132,7 +134,7 @@ const LineView: React.FC<LineViewProps> = ({ stacks }) => {
             variant="outline"
             size="icon"
             onClick={() => scrollTimeline('right')}
-            className="rounded-full bg-background/30 backdrop-blur-md border-primary/40 shadow-lg"
+            className="rounded-full bg-card/30 backdrop-blur-md border-primary/40 shadow-lg"
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -146,7 +148,7 @@ const LineView: React.FC<LineViewProps> = ({ stacks }) => {
       >
         <div className="relative min-w-max">
           {/* Horizontal Line */}
-          <div className="timeline-line glow-line-animation"></div>
+          <div className={`timeline-line ${isDarkMode ? 'glow-line-animation' : ''}`}></div>
           
           {/* Nodes */}
           <div className="flex items-center gap-24 md:gap-32 relative z-10">

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Paintbrush } from "lucide-react";
@@ -44,14 +44,87 @@ const predefinedThemes: Array<{name: string, colors: ThemeColors}> = [
 ];
 
 const ThemeColorPicker: React.FC = () => {
-  const { updateThemeColors, customColors } = useRoadmap();
+  const { updateThemeColors, customColors, isDarkMode } = useRoadmap();
+
+  // Apply theme colors on component mount and when they change
+  useEffect(() => {
+    applyThemeToDOM(customColors);
+  }, [customColors]);
 
   const applyTheme = (colors: ThemeColors) => {
     updateThemeColors(colors);
+    applyThemeToDOM(colors);
     toast({
       title: "Tema atualizado",
       description: "As cores do tema foram atualizadas com sucesso.",
     });
+  };
+
+  // Apply theme colors directly to DOM
+  const applyThemeToDOM = (colors: ThemeColors) => {
+    const root = document.documentElement;
+    
+    // Convert hex to HSL for CSS variables
+    const primaryHSL = hexToHSL(colors.primary);
+    const secondaryHSL = hexToHSL(colors.secondary);
+    const backgroundHSL = hexToHSL(colors.background);
+    
+    if (primaryHSL) {
+      root.style.setProperty('--primary', `${primaryHSL.h} ${primaryHSL.s}% ${primaryHSL.l}%`);
+    }
+    
+    if (secondaryHSL) {
+      root.style.setProperty('--secondary', `${secondaryHSL.h} ${secondaryHSL.s}% ${secondaryHSL.l}%`);
+    }
+    
+    if (backgroundHSL && isDarkMode) {
+      root.style.setProperty('--background', `${backgroundHSL.h} ${backgroundHSL.s}% ${backgroundHSL.l}%`);
+    }
+  };
+
+  // Helper function to convert hex to HSL
+  const hexToHSL = (hex: string): {h: number, s: number, l: number} | null => {
+    // Remove the # if present
+    hex = hex.replace(/^#/, '');
+    
+    // Parse the hex values
+    let r = 0, g = 0, b = 0;
+    if (hex.length === 3) {
+      r = parseInt(hex.charAt(0) + hex.charAt(0), 16) / 255;
+      g = parseInt(hex.charAt(1) + hex.charAt(1), 16) / 255;
+      b = parseInt(hex.charAt(2) + hex.charAt(2), 16) / 255;
+    } else if (hex.length === 6) {
+      r = parseInt(hex.substring(0, 2), 16) / 255;
+      g = parseInt(hex.substring(2, 4), 16) / 255;
+      b = parseInt(hex.substring(4, 6), 16) / 255;
+    } else {
+      return null; // Invalid hex
+    }
+    
+    // Find the min and max values to calculate the lightness
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h = 0, s = 0;
+    const l = (max + min) / 2;
+    
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      
+      switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+      h /= 6;
+    }
+    
+    // Convert to the correct ranges
+    h = Math.round(h * 360);
+    s = Math.round(s * 100);
+    const lPercent = Math.round(l * 100);
+    
+    return { h, s, lPercent };
   };
 
   return (
@@ -63,7 +136,10 @@ const ThemeColorPicker: React.FC = () => {
           className="rounded-full bg-background/50 backdrop-blur-sm hover:bg-accent/80 relative"
         >
           <Paintbrush className="h-4 w-4" />
-          <span className="absolute -bottom-1 -right-1 h-2.5 w-2.5 rounded-full bg-primary" />
+          <div className="absolute -bottom-1 -right-1 flex gap-0.5">
+            <div className="h-2 w-2 rounded-full" style={{ backgroundColor: customColors.primary }}></div>
+            <div className="h-2 w-2 rounded-full" style={{ backgroundColor: customColors.secondary }}></div>
+          </div>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-72" align="end">

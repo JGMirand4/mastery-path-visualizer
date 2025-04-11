@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 import LineView from '@/components/LineView';
 import ListView from '@/components/ListView';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { GithubIcon, Maximize2, Music, MusicOff } from 'lucide-react';
+import { GithubIcon, Maximize2, Music, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -57,7 +57,7 @@ const RoadmapContent = () => {
             onClick={toggleMusic}
           >
             {isMusicPlaying ? (
-              <MusicOff className="h-4 w-4" />
+              <VolumeX className="h-4 w-4" />
             ) : (
               <Music className="h-4 w-4" />
             )}

@@ -65,7 +65,7 @@ const ListView: React.FC<ListViewProps> = ({ stacks: initialStacks }) => {
               <SelectValue placeholder="All statuses" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All statuses</SelectItem>
+              <SelectItem value="all">All statuses</SelectItem>
               <SelectItem value="not-started">Not Started</SelectItem>
               <SelectItem value="in-progress">In Progress</SelectItem>
               <SelectItem value="completed">Completed</SelectItem>
@@ -82,7 +82,7 @@ const ListView: React.FC<ListViewProps> = ({ stacks: initialStacks }) => {
               <SelectValue placeholder="All categories" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All categories</SelectItem>
+              <SelectItem value="all">All categories</SelectItem>
               {categories.map((category) => (
                 <SelectItem key={category.id} value={category.name}>
                   {category.name}
@@ -124,3 +124,4 @@ const ListView: React.FC<ListViewProps> = ({ stacks: initialStacks }) => {
 };
 
 export default ListView;
+

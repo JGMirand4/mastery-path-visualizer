@@ -27,3 +27,9 @@ export type Category = {
 };
 
 export type RoadmapViewMode = 'line' | 'list';
+
+export interface ThemeColors {
+  primary: string;
+  secondary: string;
+  background: string;
+}

@@ -1,12 +1,13 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RoadmapProvider, useRoadmap } from '@/contexts/RoadmapContext';
+import { useRoadmap } from '@/contexts/RoadmapContext';
 import Header from '@/components/Header';
 import LineView from '@/components/LineView';
 import ListView from '@/components/ListView';
+import ThemeColorPicker from '@/components/ThemeColorPicker';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Github, Maximize2, VolumeX, Music, List, GitBranch, Plus } from 'lucide-react';
+import { Github, Maximize2, VolumeX, Music, List, GitBranch, Plus, Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -14,7 +15,7 @@ import { Progress } from "@/components/ui/progress";
 import StackModal from '@/components/StackModal';
 
 const RoadmapContent = () => {
-  const { stacks, viewMode, setViewMode, totalProgress } = useRoadmap();
+  const { stacks, viewMode, setViewMode, totalProgress, isDarkMode, toggleDarkMode } = useRoadmap();
   const isMobile = useIsMobile();
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
@@ -76,7 +77,7 @@ const RoadmapContent = () => {
   
   return (
     <motion.div 
-      className={`min-h-screen flex flex-col ${isFullscreen ? 'bg-gradient-to-br from-background to-background/90' : ''}`}
+      className="min-h-screen flex flex-col"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -84,9 +85,31 @@ const RoadmapContent = () => {
       <Header />
       
       <main className="flex-1 relative">
-        {/* Focus mode controls */}
-        <div className="absolute top-4 right-4 flex space-x-2 z-10">
+        {/* Controls */}
+        <div className="absolute top-4 right-4 flex gap-2 z-10">
           <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  className="rounded-full bg-background/50 backdrop-blur-sm hover:bg-accent/80" 
+                  onClick={toggleDarkMode}
+                >
+                  {isDarkMode ? (
+                    <Sun className="h-4 w-4" />
+                  ) : (
+                    <Moon className="h-4 w-4" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{isDarkMode ? 'Modo Claro' : 'Modo Escuro'}</p>
+              </TooltipContent>
+            </Tooltip>
+            
+            <ThemeColorPicker />
+            
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button 
@@ -99,7 +122,7 @@ const RoadmapContent = () => {
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{isFullscreen ? 'Exit' : 'Enter'} Focus Mode</p>
+                <p>{isFullscreen ? 'Sair' : 'Entrar'} Modo Foco</p>
               </TooltipContent>
             </Tooltip>
             
@@ -119,7 +142,7 @@ const RoadmapContent = () => {
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{isMusicPlaying ? 'Disable' : 'Enable'} Focus Music</p>
+                <p>{isMusicPlaying ? 'Desativar' : 'Ativar'} Música de Foco</p>
               </TooltipContent>
             </Tooltip>
             
@@ -139,7 +162,7 @@ const RoadmapContent = () => {
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Switch to {viewMode === 'line' ? 'List' : 'Line'} View</p>
+                <p>Mudar para Visualização {viewMode === 'line' ? 'Lista' : 'Linha'}</p>
               </TooltipContent>
             </Tooltip>
             
@@ -155,7 +178,7 @@ const RoadmapContent = () => {
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Add New Stack</p>
+                <p>Adicionar Nova Stack</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -171,7 +194,7 @@ const RoadmapContent = () => {
               exit={{ opacity: 0, y: 50 }}
               transition={{ duration: 0.3 }}
             >
-              <p className="text-sm">{isMusicPlaying ? 'Focus music enabled' : 'Focus music disabled'}</p>
+              <p className="text-sm">{isMusicPlaying ? 'Música de foco ativada' : 'Música de foco desativada'}</p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -180,18 +203,18 @@ const RoadmapContent = () => {
         <div className="container mx-auto px-4 pt-6 pb-2">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mb-4">
             <div>
-              <h1 className="text-2xl font-bold font-mono mb-1">My Road to Mastery</h1>
+              <h1 className="text-2xl font-bold mb-1">Jornada para Maestria</h1>
               <p className="text-sm text-muted-foreground">
-                Back-End Python + DevOps + ML-ready
+                Back-End Python + DevOps + ML
               </p>
             </div>
             
             <div className="flex flex-col w-full md:w-auto md:max-w-xs">
               <div className="flex justify-between text-xs mb-1">
-                <span>Power Level</span>
+                <span>Nível</span>
                 <span className="font-mono">{totalProgress}%</span>
               </div>
-              <div className="h-2 w-full md:w-40 bg-muted rounded-full overflow-hidden">
+              <div className="h-1.5 w-full md:w-40 bg-muted rounded-full overflow-hidden">
                 <Progress value={totalProgress} className="h-full" />
               </div>
             </div>
@@ -218,8 +241,8 @@ const RoadmapContent = () => {
         {isMobile && (
           <Tabs defaultValue={viewMode} className="px-4 py-2" onValueChange={(value) => setViewMode(value as 'line' | 'list')}>
             <TabsList className="grid grid-cols-2 w-full mb-4">
-              <TabsTrigger value="line">Line View</TabsTrigger>
-              <TabsTrigger value="list">List View</TabsTrigger>
+              <TabsTrigger value="line">Visão Linha</TabsTrigger>
+              <TabsTrigger value="list">Visão Lista</TabsTrigger>
             </TabsList>
             
             <TabsContent value="line" className="mt-0">
@@ -253,7 +276,7 @@ const RoadmapContent = () => {
       
       <footer className="border-t py-4 px-6 text-center text-xs text-muted-foreground flex items-center justify-center">
         <div className="flex items-center gap-1">
-          <span>Road to Mastery</span>
+          <span>Jornada para Maestria</span>
           <span className="mx-2">•</span>
           <a 
             href="https://github.com" 
@@ -261,10 +284,10 @@ const RoadmapContent = () => {
             rel="noopener noreferrer"
             className="flex items-center gap-1 hover:text-foreground transition-colors"
           >
-            <Github className="h-3.5 w-3.5" /> View on GitHub
+            <Github className="h-3.5 w-3.5" /> Ver no GitHub
           </a>
           <span className="mx-2">•</span>
-          <span>Power Level: {stacks.filter(s => s.status === 'completed').length} / {stacks.length}</span>
+          <span>Progresso: {stacks.filter(s => s.status === 'completed').length} / {stacks.length}</span>
         </div>
       </footer>
       
@@ -274,11 +297,7 @@ const RoadmapContent = () => {
 };
 
 const Index = () => {
-  return (
-    <RoadmapProvider>
-      <RoadmapContent />
-    </RoadmapProvider>
-  );
+  return <RoadmapContent />;
 };
 
 export default Index;

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { Stack, StackStatus, Category, RoadmapViewMode } from '@/types';
+import { Stack, StackStatus, Category, RoadmapViewMode, ThemeColors } from '@/types';
 import { toast } from "@/components/ui/use-toast";
 
 interface RoadmapContextType {
@@ -8,6 +8,7 @@ interface RoadmapContextType {
   viewMode: RoadmapViewMode;
   isDarkMode: boolean;
   totalProgress: number;
+  customColors: ThemeColors;
   addStack: (stack: Omit<Stack, 'id' | 'lastUpdated'>) => void;
   updateStack: (stack: Stack) => void;
   deleteStack: (id: string) => void;
@@ -17,6 +18,7 @@ interface RoadmapContextType {
   setViewMode: (mode: RoadmapViewMode) => void;
   toggleDarkMode: () => void;
   filterStacks: (query: string, status?: StackStatus | 'all', category?: string) => Stack[];
+  updateThemeColors: (colors: ThemeColors) => void;
 }
 
 const RoadmapContext = createContext<RoadmapContextType | undefined>(undefined);
@@ -37,6 +39,12 @@ const defaultCategories: Category[] = [
   { id: '5', name: 'MLOps e Machine Learning' },
   { id: '6', name: 'Diferenciais de Mercado' },
 ];
+
+const defaultColors: ThemeColors = {
+  primary: "#10F3AF",
+  secondary: "#6D28D9",
+  background: "#0A0F1C",
+};
 
 const initialStacks: Stack[] = [
   {
@@ -531,12 +539,21 @@ const loadFromLocalStorage = <T,>(key: string, defaultValue: T): T => {
   if (typeof window === 'undefined') return defaultValue;
   const saved = localStorage.getItem(key);
   if (saved === null) return defaultValue;
-  return JSON.parse(saved) as T;
+  try {
+    return JSON.parse(saved) as T;
+  } catch (error) {
+    console.error(`Error parsing localStorage item ${key}:`, error);
+    return defaultValue;
+  }
 };
 
 const saveToLocalStorage = <T,>(key: string, value: T): void => {
   if (typeof window !== 'undefined') {
-    localStorage.setItem(key, JSON.stringify(value));
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      console.error(`Error saving to localStorage key ${key}:`, error);
+    }
   }
 };
 
@@ -561,6 +578,10 @@ export const RoadmapProvider = ({ children }: RoadmapProviderProps) => {
     loadFromLocalStorage('darkMode', true)
   );
 
+  const [customColors, setCustomColors] = useState<ThemeColors>(() =>
+    loadFromLocalStorage('themeColors', defaultColors)
+  );
+
   const totalProgress = stacks.length > 0
     ? Math.round((stacks.filter(s => s.status === 'completed').length / stacks.length) * 100)
     : 0;
@@ -570,13 +591,25 @@ export const RoadmapProvider = ({ children }: RoadmapProviderProps) => {
     saveToLocalStorage('roadmapCategories', categories);
     saveToLocalStorage('roadmapViewMode', viewMode);
     saveToLocalStorage('darkMode', isDarkMode);
+    saveToLocalStorage('themeColors', customColors);
     
     if (isDarkMode) {
       document.documentElement.classList.remove('light');
     } else {
       document.documentElement.classList.add('light');
     }
-  }, [stacks, categories, viewMode, isDarkMode]);
+
+    document.documentElement.style.setProperty('--primary', customColors.primary);
+    document.documentElement.style.setProperty('--secondary', customColors.secondary);
+    
+    if (isDarkMode) {
+      document.documentElement.style.setProperty('--background', customColors.background);
+    }
+  }, [stacks, categories, viewMode, isDarkMode, customColors]);
+
+  const updateThemeColors = (colors: ThemeColors) => {
+    setCustomColors(colors);
+  };
 
   const addStack = (stackData: Omit<Stack, 'id' | 'lastUpdated'>) => {
     const newStack: Stack = {
@@ -669,6 +702,8 @@ export const RoadmapProvider = ({ children }: RoadmapProviderProps) => {
         newStatus = 'completed';
       } else if (someCompleted) {
         newStatus = 'in-progress';
+      } else {
+        newStatus = 'not-started';
       }
 
       return { 
@@ -703,6 +738,7 @@ export const RoadmapProvider = ({ children }: RoadmapProviderProps) => {
     viewMode,
     isDarkMode,
     totalProgress,
+    customColors,
     addStack,
     updateStack,
     deleteStack,
@@ -712,6 +748,7 @@ export const RoadmapProvider = ({ children }: RoadmapProviderProps) => {
     setViewMode,
     toggleDarkMode,
     filterStacks,
+    updateThemeColors,
   };
 
   return (

@@ -37,6 +37,10 @@
 
     --radius: 0.5rem;
 
+    --roadmap-blue: 200 98% 59%;
+    --roadmap-yellow: 45 100% 56%;
+    --roadmap-green: 142 70% 45%;
+
     --not-started: 200 98% 59%;
     --in-progress: 45 100% 56%;
     --completed: 142 70% 45%;
@@ -72,6 +76,10 @@
     --ring: 158 92% 35%;
 
     --radius: 0.5rem;
+
+    --roadmap-blue: 200 98% 48%;
+    --roadmap-yellow: 45 100% 50%;
+    --roadmap-green: 142 70% 40%;
 
     --not-started: 200 98% 48%;
     --in-progress: 45 100% 50%;
@@ -111,6 +119,8 @@
   
   .stack-node {
     @apply relative flex flex-col items-center justify-center p-4 rounded-xl transition-all duration-300;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(4px);
   }
   
   .stack-node:hover {
@@ -130,23 +140,38 @@
   }
   
   .timeline-line {
-    @apply absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-[#38BDF8] via-[#6D28D9] to-[#10F3AF];
+    @apply absolute top-1/2 left-0 right-0 h-1.5;
+    background: linear-gradient(90deg, 
+      rgba(56, 189, 248, 0.7) 0%, 
+      rgba(109, 40, 217, 0.7) 50%, 
+      rgba(16, 243, 175, 0.7) 100%);
     z-index: 0;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 0 8px rgba(16, 243, 175, 0.4);
   }
   
   .vertical-timeline-line {
-    @apply absolute top-0 bottom-0 left-1/2 w-1 bg-gradient-to-b from-[#38BDF8] via-[#6D28D9] to-[#10F3AF];
+    @apply absolute top-0 bottom-0 left-1/2 w-1.5;
+    background: linear-gradient(180deg, 
+      rgba(56, 189, 248, 0.7) 0%, 
+      rgba(109, 40, 217, 0.7) 50%, 
+      rgba(16, 243, 175, 0.7) 100%);
     z-index: 0;
     transform: translateX(-50%);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 0 8px rgba(16, 243, 175, 0.4);
   }
 
   .stack-card {
     @apply relative p-5 rounded-xl transition-all duration-300;
-    background: linear-gradient(145deg, rgba(10,15,28,0.9), rgba(30,35,50,0.8));
+    background: linear-gradient(145deg, rgba(10,15,28,0.85), rgba(30,35,50,0.75));
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
   }
   
   .stack-card:hover {
     @apply glow transform scale-[1.02];
+    border: 1px solid rgba(16, 243, 175, 0.3);
   }
 
   .neon-border {
@@ -166,20 +191,63 @@
     margin: -2px;
     opacity: 0.5;
   }
+
+  .progress-ring circle {
+    transition: stroke-dashoffset 0.35s;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+  }
+  
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .glass-card {
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .bg-grid {
+    background-size: 30px 30px;
+    background-image: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  }
 }
 
 /* Animations */
 @keyframes pulse {
   0%, 100% {
     opacity: 1;
+    transform: scale(1);
   }
   50% {
-    opacity: 0.7;
+    opacity: 0.85;
+    transform: scale(1.02);
   }
 }
 
 .pulse {
-  animation: pulse 2s infinite;
+  animation: pulse 3s infinite ease-in-out;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.float {
+  animation: float 3s infinite ease-in-out;
 }
 
 @keyframes achievement-glow {
@@ -197,4 +265,25 @@
 
 .achievement-animation {
   animation: achievement-glow 2s ease-in-out;
+}
+
+@keyframes gradient-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.gradient-bg {
+  background: linear-gradient(90deg, 
+    rgba(16, 243, 175, 0.08),
+    rgba(109, 40, 217, 0.08),
+    rgba(56, 189, 248, 0.08));
+  background-size: 200% 200%;
+  animation: gradient-animation 15s ease infinite;
 }

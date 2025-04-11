@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { Stack, StackStatus, Category, RoadmapViewMode } from '@/types';
 import { toast } from "@/components/ui/use-toast";
@@ -17,7 +16,7 @@ interface RoadmapContextType {
   toggleSubtopicStatus: (stackId: string, subtopicId: string) => void;
   setViewMode: (mode: RoadmapViewMode) => void;
   toggleDarkMode: () => void;
-  filterStacks: (query: string, status?: StackStatus, category?: string) => Stack[];
+  filterStacks: (query: string, status?: StackStatus | 'all', category?: string) => Stack[];
 }
 
 const RoadmapContext = createContext<RoadmapContextType | undefined>(undefined);
@@ -40,7 +39,6 @@ const defaultCategories: Category[] = [
 ];
 
 const initialStacks: Stack[] = [
-  // Fundamentos Avançados de Programação
   {
     id: '1',
     icon: '🧠',
@@ -139,7 +137,6 @@ const initialStacks: Stack[] = [
     lastUpdated: new Date().toISOString()
   },
 
-  // Desenvolvimento Back-End Profissional
   {
     id: '7',
     icon: '🏗️',
@@ -237,7 +234,6 @@ const initialStacks: Stack[] = [
     lastUpdated: new Date().toISOString()
   },
 
-  // Infraestrutura e DevOps
   {
     id: '13',
     icon: '🐳',
@@ -272,7 +268,7 @@ const initialStacks: Stack[] = [
   },
   {
     id: '15',
-    icon: '🔁',
+    icon: '🔧',
     title: 'CI/CD Profissional',
     description: 'Dominar pipelines de CI/CD para automação de deploys',
     status: 'not-started',
@@ -319,7 +315,6 @@ const initialStacks: Stack[] = [
     lastUpdated: new Date().toISOString()
   },
 
-  // Observabilidade e Segurança
   {
     id: '18',
     icon: '🔍',
@@ -401,7 +396,6 @@ const initialStacks: Stack[] = [
     lastUpdated: new Date().toISOString()
   },
 
-  // MLOps e Machine Learning
   {
     id: '23',
     icon: '📈',
@@ -467,7 +461,6 @@ const initialStacks: Stack[] = [
     lastUpdated: new Date().toISOString()
   },
 
-  // Diferenciais de Mercado
   {
     id: '27',
     icon: '🧠',
@@ -568,19 +561,16 @@ export const RoadmapProvider = ({ children }: RoadmapProviderProps) => {
     loadFromLocalStorage('darkMode', true)
   );
 
-  // Calculate total progress
   const totalProgress = stacks.length > 0
     ? Math.round((stacks.filter(s => s.status === 'completed').length / stacks.length) * 100)
     : 0;
 
-  // Save state to localStorage whenever it changes
   useEffect(() => {
     saveToLocalStorage('roadmapStacks', stacks);
     saveToLocalStorage('roadmapCategories', categories);
     saveToLocalStorage('roadmapViewMode', viewMode);
     saveToLocalStorage('darkMode', isDarkMode);
     
-    // Apply dark/light mode to document
     if (isDarkMode) {
       document.documentElement.classList.remove('light');
     } else {
@@ -671,7 +661,6 @@ export const RoadmapProvider = ({ children }: RoadmapProviderProps) => {
         return { ...subtopic, isCompleted: !subtopic.isCompleted };
       });
 
-      // Check if all subtopics are completed to update stack status
       const allCompleted = updatedSubtopics.every(subtopic => subtopic.isCompleted);
       const someCompleted = updatedSubtopics.some(subtopic => subtopic.isCompleted);
       
@@ -695,7 +684,7 @@ export const RoadmapProvider = ({ children }: RoadmapProviderProps) => {
     setIsDarkMode(prev => !prev);
   };
 
-  const filterStacks = (query: string, status?: StackStatus, category?: string): Stack[] => {
+  const filterStacks = (query: string, status?: StackStatus | 'all', category?: string): Stack[] => {
     return stacks.filter(stack => {
       const matchesQuery = query === '' || 
         stack.title.toLowerCase().includes(query.toLowerCase()) ||

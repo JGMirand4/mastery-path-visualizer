@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Stack, StackStatus } from '@/types';
 import StackCard from './StackCard';
@@ -38,8 +37,8 @@ const ListView: React.FC<ListViewProps> = ({ stacks: initialStacks }) => {
   
   const filteredStacks = filterStacks(
     searchQuery, 
-    statusFilter === 'all' ? undefined : statusFilter, 
-    categoryFilter === 'all' ? undefined : categoryFilter
+    statusFilter, 
+    categoryFilter
   );
   
   // Group stacks by category

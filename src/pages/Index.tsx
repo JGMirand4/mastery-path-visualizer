@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRoadmap } from '@/contexts/RoadmapContext';
 import Header from '@/components/Header';
@@ -7,7 +7,7 @@ import LineView from '@/components/LineView';
 import ListView from '@/components/ListView';
 import ThemeColorPicker from '@/components/ThemeColorPicker';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Github, Maximize2, VolumeX, Music, List, GitBranch, Plus, Moon, Sun } from 'lucide-react';
+import { Github, Maximize2, VolumeX, Music, List, GitBranch, Plus, Moon, Sun, ChevronsRight, ChevronsLeft, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -21,11 +21,50 @@ const RoadmapContent = () => {
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [showFocusModeToast, setShowFocusModeToast] = useState(false);
+  const [controlsOpen, setControlsOpen] = useState(true);
   
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { duration: 0.5 } }
+  };
+  
+  const controlsVariants = {
+    open: { 
+      x: 0, 
+      opacity: 1,
+      transition: { 
+        type: "spring", 
+        stiffness: 300, 
+        damping: 30,
+        staggerChildren: 0.05,
+        delayChildren: 0.05
+      } 
+    },
+    closed: { 
+      x: "100%", 
+      opacity: 0,
+      transition: { 
+        type: "spring", 
+        stiffness: 300, 
+        damping: 30,
+        staggerChildren: 0.05,
+        staggerDirection: -1
+      }
+    }
+  };
+  
+  const itemVariants = {
+    open: { 
+      x: 0, 
+      opacity: 1, 
+      transition: { type: "spring", stiffness: 300, damping: 30 } 
+    },
+    closed: { 
+      x: 30, 
+      opacity: 0, 
+      transition: { type: "spring", stiffness: 300, damping: 30 } 
+    }
   };
   
   useEffect(() => {
@@ -77,7 +116,7 @@ const RoadmapContent = () => {
   
   return (
     <motion.div 
-      className="min-h-screen flex flex-col"
+      className="min-h-screen flex flex-col relative"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -85,104 +124,138 @@ const RoadmapContent = () => {
       <Header />
       
       <main className="flex-1 relative">
-        {/* Controls */}
-        <div className="absolute top-4 right-4 flex gap-2 z-10">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  className="rounded-full bg-background/50 backdrop-blur-sm hover:bg-accent/80" 
-                  onClick={toggleDarkMode}
-                >
-                  {isDarkMode ? (
-                    <Sun className="h-4 w-4" />
-                  ) : (
-                    <Moon className="h-4 w-4" />
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{isDarkMode ? 'Modo Claro' : 'Modo Escuro'}</p>
-              </TooltipContent>
-            </Tooltip>
-            
-            <ThemeColorPicker />
-            
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  className="rounded-full bg-background/50 backdrop-blur-sm hover:bg-accent/80" 
-                  onClick={toggleFullscreen}
-                >
-                  <Maximize2 className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{isFullscreen ? 'Sair' : 'Entrar'} Modo Foco</p>
-              </TooltipContent>
-            </Tooltip>
-            
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  className="rounded-full bg-background/50 backdrop-blur-sm hover:bg-accent/80" 
-                  onClick={toggleMusic}
-                >
-                  {isMusicPlaying ? (
-                    <VolumeX className="h-4 w-4" />
-                  ) : (
-                    <Music className="h-4 w-4" />
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{isMusicPlaying ? 'Desativar' : 'Ativar'} Música de Foco</p>
-              </TooltipContent>
-            </Tooltip>
-            
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="rounded-full bg-background/50 backdrop-blur-sm hover:bg-accent/80"
-                  onClick={() => !isMobile && setViewMode(viewMode === 'line' ? 'list' : 'line')}
-                >
-                  {viewMode === 'line' ? (
-                    <List className="h-4 w-4" />
-                  ) : (
-                    <GitBranch className="h-4 w-4" />
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Mudar para Visualização {viewMode === 'line' ? 'Lista' : 'Linha'}</p>
-              </TooltipContent>
-            </Tooltip>
-            
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="default" 
-                  size="icon" 
-                  className="rounded-full"
-                  onClick={() => setIsAddModalOpen(true)}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Adicionar Nova Stack</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+        {/* Controls Toggle Button */}
+        <div className="absolute top-4 right-4 z-20">
+          <Button 
+            variant="outline" 
+            size="icon"
+            className="rounded-full bg-background/50 backdrop-blur-md border border-primary/40 shadow-lg hover:shadow-primary/20 hover:bg-primary/5"
+            onClick={() => setControlsOpen(!controlsOpen)}
+          >
+            {controlsOpen ? <ChevronsRight className="h-4 w-4" /> : <ChevronsLeft className="h-4 w-4" />}
+          </Button>
         </div>
+        
+        {/* Controls Panel */}
+        <AnimatePresence>
+          {controlsOpen && (
+            <motion.div 
+              className="absolute top-16 right-4 flex flex-col gap-2 z-10"
+              variants={controlsVariants}
+              initial="closed"
+              animate="open"
+              exit="closed"
+            >
+              <TooltipProvider delayDuration={200}>
+                <motion.div variants={itemVariants}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        size="icon" 
+                        className="rounded-full bg-background/50 backdrop-blur-md border-primary/40 shadow-lg hover:shadow-primary/20 hover:bg-primary/5" 
+                        onClick={toggleDarkMode}
+                      >
+                        {isDarkMode ? (
+                          <Sun className="h-4 w-4" />
+                        ) : (
+                          <Moon className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="left">
+                      <p>{isDarkMode ? 'Modo Claro' : 'Modo Escuro'}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </motion.div>
+                
+                <motion.div variants={itemVariants}>
+                  <ThemeColorPicker />
+                </motion.div>
+                
+                <motion.div variants={itemVariants}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        size="icon" 
+                        className="rounded-full bg-background/50 backdrop-blur-md border-primary/40 shadow-lg hover:shadow-primary/20 hover:bg-primary/5" 
+                        onClick={toggleFullscreen}
+                      >
+                        <Maximize2 className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="left">
+                      <p>{isFullscreen ? 'Sair' : 'Entrar'} Modo Foco</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </motion.div>
+                
+                <motion.div variants={itemVariants}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        size="icon" 
+                        className="rounded-full bg-background/50 backdrop-blur-md border-primary/40 shadow-lg hover:shadow-primary/20 hover:bg-primary/5" 
+                        onClick={toggleMusic}
+                      >
+                        {isMusicPlaying ? (
+                          <VolumeX className="h-4 w-4" />
+                        ) : (
+                          <Music className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="left">
+                      <p>{isMusicPlaying ? 'Desativar' : 'Ativar'} Música de Foco</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </motion.div>
+                
+                <motion.div variants={itemVariants}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="rounded-full bg-background/50 backdrop-blur-md border-primary/40 shadow-lg hover:shadow-primary/20 hover:bg-primary/5"
+                        onClick={() => !isMobile && setViewMode(viewMode === 'line' ? 'list' : 'line')}
+                      >
+                        {viewMode === 'line' ? (
+                          <List className="h-4 w-4" />
+                        ) : (
+                          <GitBranch className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="left">
+                      <p>Mudar para Visualização {viewMode === 'line' ? 'Lista' : 'Linha'}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </motion.div>
+                
+                <motion.div variants={itemVariants}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="default" 
+                        size="icon" 
+                        className="rounded-full shadow-lg hover:shadow-primary/30"
+                        onClick={() => setIsAddModalOpen(true)}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="left">
+                      <p>Adicionar Nova Stack</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </motion.div>
+              </TooltipProvider>
+            </motion.div>
+          )}
+        </AnimatePresence>
         
         {/* Focus mode toast */}
         <AnimatePresence>

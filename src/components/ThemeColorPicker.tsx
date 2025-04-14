@@ -122,9 +122,9 @@ const ThemeColorPicker: React.FC = () => {
     // Convert to the correct ranges
     h = Math.round(h * 360);
     s = Math.round(s * 100);
-    const lPercent = Math.round(l * 100);
+    const l_percent = Math.round(l * 100);
     
-    return { h, s, lPercent };
+    return { h, s, l: l_percent };
   };
 
   return (

@@ -16,13 +16,14 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import StackModal from './StackModal';
+import { motion } from 'framer-motion';
 
 interface StackNodeProps {
   stack: Stack;
 }
 
 const StackNode: React.FC<StackNodeProps> = ({ stack }) => {
-  const { toggleStackStatus, toggleSubtopicStatus, deleteStack, moveStack } = useRoadmap();
+  const { toggleStackStatus, toggleSubtopicStatus, deleteStack, moveStack, isDarkMode } = useRoadmap();
   const [isHovered, setIsHovered] = useState(false);
   const [showPopover, setShowPopover] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -37,6 +38,13 @@ const StackNode: React.FC<StackNodeProps> = ({ stack }) => {
     'not-started': 'bg-roadmap-blue/20',
     'in-progress': 'bg-roadmap-yellow/20',
     'completed': 'bg-roadmap-green/20',
+  };
+
+  // Node glowing effect based on status
+  const nodeGlowClasses = {
+    'not-started': isDarkMode ? 'glow-blue-sm' : 'shadow-sm',
+    'in-progress': isDarkMode ? 'glow-yellow-sm' : 'shadow-sm',
+    'completed': isDarkMode ? 'glow-green-sm' : 'shadow-sm',
   };
   
   const completedCount = stack.subtopics.filter(subtopic => subtopic.isCompleted).length;
@@ -74,22 +82,34 @@ const StackNode: React.FC<StackNodeProps> = ({ stack }) => {
           <Popover open={showPopover} onOpenChange={setShowPopover}>
             <TooltipTrigger asChild>
               <PopoverTrigger asChild>
-                <div 
-                  className={`stack-node ${stack.status} ${stack.status === 'completed' ? 'achievement-animation' : ''}`}
+                <motion.div 
+                  className={`stack-node ${stack.status} ${nodeGlowClasses[stack.status]} backdrop-blur-sm ${isDarkMode ? 'border-white/10' : 'border-black/10'} ${stack.status === 'completed' ? 'achievement-animation' : ''}`}
                   onMouseEnter={() => setIsHovered(true)}
                   onMouseLeave={() => setIsHovered(false)}
                   onClick={() => setShowPopover(true)}
                   role="button"
                   tabIndex={0}
+                  whileHover={{ 
+                    scale: 1.05, 
+                    transition: { duration: 0.2 }
+                  }}
+                  animate={isHovered ? { 
+                    boxShadow: [
+                      `0 0 10px 0 rgba(var(--${stack.status === 'completed' ? 'green' : stack.status === 'in-progress' ? 'yellow' : 'blue'}-rgb), 0.3)`,
+                      `0 0 16px 2px rgba(var(--${stack.status === 'completed' ? 'green' : stack.status === 'in-progress' ? 'yellow' : 'blue'}-rgb), 0.5)`,
+                      `0 0 10px 0 rgba(var(--${stack.status === 'completed' ? 'green' : stack.status === 'in-progress' ? 'yellow' : 'blue'}-rgb), 0.3)`
+                    ],
+                    transition: { duration: 1.5, repeat: Infinity }
+                  } : {}}
                 >
-                  <div className={`text-4xl mb-2 ${isHovered ? 'pulse' : ''}`}>{stack.icon}</div>
+                  <div className={`text-4xl mb-2 ${isHovered ? 'animate-pulse' : ''}`}>{stack.icon}</div>
                   <h3 className="text-sm font-mono font-bold whitespace-nowrap">{stack.title}</h3>
-                  <div className={`mt-1 text-xs px-2 py-0.5 rounded-full ${statusColors[stack.status]}`}>
+                  <div className={`mt-1 text-xs px-2 py-0.5 rounded-full ${statusBgColors[stack.status]} ${statusColors[stack.status]}`}>
                     {stack.status === 'not-started' && 'Not Started'}
                     {stack.status === 'in-progress' && 'In Progress'}
                     {stack.status === 'completed' && 'Completed'}
                   </div>
-                </div>
+                </motion.div>
               </PopoverTrigger>
             </TooltipTrigger>
             
@@ -112,7 +132,7 @@ const StackNode: React.FC<StackNodeProps> = ({ stack }) => {
                     ))}
                   </ul>
                 </div>
-                {stack.resources && (
+                {stack.resources && stack.resources.length > 0 && (
                   <div className="mt-2">
                     <h5 className="text-xs font-bold">Resources:</h5>
                     <ul className="text-xs list-disc list-inside">
@@ -198,6 +218,7 @@ const StackNode: React.FC<StackNodeProps> = ({ stack }) => {
                   size="sm"
                   variant="outline"
                   onClick={handleToggleStatus}
+                  className="hover:bg-primary/10"
                 >
                   <Check className="h-4 w-4 mr-1" />
                   Update Status
@@ -206,6 +227,7 @@ const StackNode: React.FC<StackNodeProps> = ({ stack }) => {
                   size="sm"
                   variant="outline"
                   onClick={handleEditClick}
+                  className="hover:bg-primary/10"
                 >
                   <Edit className="h-4 w-4 mr-1" />
                   Edit
@@ -223,7 +245,7 @@ const StackNode: React.FC<StackNodeProps> = ({ stack }) => {
                   <Button 
                     size="icon"
                     variant="outline"
-                    className="h-8 w-8"
+                    className="h-8 w-8 rounded-full"
                     onClick={(e) => handleMoveClick(e, 'up')}
                   >
                     <ArrowUp className="h-4 w-4" />
@@ -231,7 +253,7 @@ const StackNode: React.FC<StackNodeProps> = ({ stack }) => {
                   <Button 
                     size="icon"
                     variant="outline"
-                    className="h-8 w-8"
+                    className="h-8 w-8 rounded-full"
                     onClick={(e) => handleMoveClick(e, 'down')}
                   >
                     <ArrowDown className="h-4 w-4" />

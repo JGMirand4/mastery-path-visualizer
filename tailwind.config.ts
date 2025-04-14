@@ -130,6 +130,18 @@ export default {
           "0%": { borderRadius: "9999px", height: "0.25rem" },
           "100%": { borderRadius: "0.75rem", height: "auto" },
         },
+        "scale-in": {
+          "0%": { transform: "scale(0.95)", opacity: "0" },
+          "100%": { transform: "scale(1)", opacity: "1" }
+        },
+        "scale-out": {
+          "0%": { transform: "scale(1)", opacity: "1" },
+          "100%": { transform: "scale(0.95)", opacity: "0" }
+        },
+        "rotate-in": {
+          "0%": { transform: "rotate(-10deg) scale(0.95)", opacity: "0" },
+          "100%": { transform: "rotate(0deg) scale(1)", opacity: "1" }
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -145,7 +157,14 @@ export default {
         "float": "float 3s ease-in-out infinite",
         "morph-to-line": "morph-to-line 0.5s ease-out forwards",
         "morph-to-card": "morph-to-card 0.5s ease-out forwards",
+        "scale-in": "scale-in 0.3s ease-out",
+        "scale-out": "scale-out 0.3s ease-out",
+        "rotate-in": "rotate-in 0.5s ease-out"
       },
+      boxShadow: {
+        'glow': '0 0 10px 0 rgba(var(--primary-rgb), 0.3)',
+        'glow-lg': '0 0 20px 5px rgba(var(--primary-rgb), 0.4)',
+      }
     },
   },
   plugins: [require("tailwindcss-animate")],

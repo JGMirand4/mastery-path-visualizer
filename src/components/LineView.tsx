@@ -79,12 +79,12 @@ const LineView: React.FC<LineViewProps> = ({ stacks }) => {
   
   if (isMobile) {
     return (
-      <div className="relative min-h-[500px] px-4 py-6">
+      <div className="relative min-h-[500px] px-4 py-10">
         {/* Vertical Line */}
         <div className={`vertical-timeline-line ${isDarkMode ? 'glow-line-animation' : ''}`}></div>
         
         {/* Nodes */}
-        <div className="flex flex-col items-center gap-24 relative z-10 pb-12">
+        <div className="flex flex-col items-center gap-28 relative z-10 pb-16">
           {stacks.map((stack, index) => (
             <motion.div 
               key={stack.id} 
@@ -96,7 +96,7 @@ const LineView: React.FC<LineViewProps> = ({ stacks }) => {
             >
               <div className="relative">
                 {index !== stacks.length - 1 && (
-                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 h-24 w-0.5 bg-gradient-to-b from-primary/40 to-transparent"></div>
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 h-28 w-0.5 bg-gradient-to-b from-primary/60 to-transparent"></div>
                 )}
                 <StackNode stack={stack} />
               </div>
@@ -113,7 +113,7 @@ const LineView: React.FC<LineViewProps> = ({ stacks }) => {
       <AnimatePresence>
         {scrollPosition > 50 && (
           <motion.div
-            className="absolute left-4 top-1/2 z-20 transform -translate-y-1/2"
+            className="absolute left-6 top-1/2 z-20 transform -translate-y-1/2"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
@@ -123,7 +123,7 @@ const LineView: React.FC<LineViewProps> = ({ stacks }) => {
               variant="outline"
               size="icon"
               onClick={() => scrollTimeline('left')}
-              className="rounded-full bg-card/30 backdrop-blur-md border-primary/40 shadow-lg hover:bg-primary/20 hover:border-primary/60 transition-all duration-300"
+              className="btn-circle bg-card/30 backdrop-blur-md border-primary/40 shadow-lg hover:bg-primary/20 hover:border-primary/60 transition-all duration-300"
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
@@ -132,7 +132,7 @@ const LineView: React.FC<LineViewProps> = ({ stacks }) => {
         
         {maxScroll - scrollPosition > 50 && (
           <motion.div
-            className="absolute right-4 top-1/2 z-20 transform -translate-y-1/2"
+            className="absolute right-6 top-1/2 z-20 transform -translate-y-1/2"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
@@ -142,7 +142,7 @@ const LineView: React.FC<LineViewProps> = ({ stacks }) => {
               variant="outline"
               size="icon"
               onClick={() => scrollTimeline('right')}
-              className="rounded-full bg-card/30 backdrop-blur-md border-primary/40 shadow-lg hover:bg-primary/20 hover:border-primary/60 transition-all duration-300"
+              className="btn-circle bg-card/30 backdrop-blur-md border-primary/40 shadow-lg hover:bg-primary/20 hover:border-primary/60 transition-all duration-300"
             >
               <ChevronRight className="h-5 w-5" />
             </Button>
@@ -152,15 +152,15 @@ const LineView: React.FC<LineViewProps> = ({ stacks }) => {
       
       <div 
         ref={containerRef}
-        className="overflow-x-auto pb-10 pt-16 px-12 min-h-[350px] hide-scrollbar"
+        className="overflow-x-auto pb-10 pt-16 px-12 min-h-[400px] hide-scrollbar"
         onScroll={updateScrollInfo}
       >
         <div className="relative min-w-max">
           {/* Horizontal Line */}
-          <div className={`timeline-line ${isDarkMode ? 'glow-line-animation' : ''} h-0.5 rounded-full bg-gradient-to-r from-transparent via-primary/40 to-transparent absolute top-1/2 left-0 right-0 transform -translate-y-1/2`}></div>
+          <div className={`timeline-line ${isDarkMode ? 'glow-line-animation' : ''}`}></div>
           
           {/* Nodes */}
-          <div className="flex items-center gap-28 md:gap-36 relative z-10 px-16 pb-6">
+          <div className="flex items-center gap-28 md:gap-40 relative z-10 px-16 pb-6">
             {stacks.map((stack, index) => (
               <motion.div 
                 key={stack.id} 
@@ -171,8 +171,8 @@ const LineView: React.FC<LineViewProps> = ({ stacks }) => {
                 variants={nodeVariants}
               >
                 <div className="relative">
-                  <div className="absolute top-1/2 left-0 transform -translate-y-1/2 -translate-x-full w-[50px] h-[1px] bg-gradient-to-l from-primary/40 to-transparent"></div>
-                  <div className="absolute top-1/2 right-0 transform -translate-y-1/2 translate-x-full w-[50px] h-[1px] bg-gradient-to-r from-primary/40 to-transparent"></div>
+                  <div className="absolute top-1/2 left-0 transform -translate-y-1/2 -translate-x-full w-[60px] h-[1px] bg-gradient-to-l from-primary/60 to-transparent"></div>
+                  <div className="absolute top-1/2 right-0 transform -translate-y-1/2 translate-x-full w-[60px] h-[1px] bg-gradient-to-r from-primary/60 to-transparent"></div>
                   <StackNode stack={stack} />
                 </div>
               </motion.div>

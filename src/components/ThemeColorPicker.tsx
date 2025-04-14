@@ -40,6 +40,14 @@ const predefinedThemes: Array<{name: string, colors: ThemeColors}> = [
       secondary: "#8B5CF6",
       background: "#0F1729",
     }
+  },
+  {
+    name: "Verde",
+    colors: {
+      primary: "#10B981",
+      secondary: "#047857",
+      background: "#0F172A",
+    }
   }
 ];
 
@@ -49,7 +57,7 @@ const ThemeColorPicker: React.FC = () => {
   // Apply theme colors on component mount and when they change
   useEffect(() => {
     applyThemeToDOM(customColors);
-  }, [customColors]);
+  }, [customColors, isDarkMode]);
 
   const applyTheme = (colors: ThemeColors) => {
     updateThemeColors(colors);
@@ -71,15 +79,49 @@ const ThemeColorPicker: React.FC = () => {
     
     if (primaryHSL) {
       root.style.setProperty('--primary', `${primaryHSL.h} ${primaryHSL.s}% ${primaryHSL.l}%`);
+      
+      // Convert hex to RGB for primary-rgb variable
+      const primaryRGB = hexToRGB(colors.primary);
+      if (primaryRGB) {
+        root.style.setProperty('--primary-rgb', `${primaryRGB.r}, ${primaryRGB.g}, ${primaryRGB.b}`);
+      }
     }
     
     if (secondaryHSL) {
       root.style.setProperty('--secondary', `${secondaryHSL.h} ${secondaryHSL.s}% ${secondaryHSL.l}%`);
+      
+      // Convert hex to RGB for secondary-rgb variable
+      const secondaryRGB = hexToRGB(colors.secondary);
+      if (secondaryRGB) {
+        root.style.setProperty('--secondary-rgb', `${secondaryRGB.r}, ${secondaryRGB.g}, ${secondaryRGB.b}`);
+      }
     }
     
     if (backgroundHSL && isDarkMode) {
       root.style.setProperty('--background', `${backgroundHSL.h} ${backgroundHSL.s}% ${backgroundHSL.l}%`);
     }
+  };
+
+  // Helper function to convert hex to RGB
+  const hexToRGB = (hex: string): {r: number, g: number, b: number} | null => {
+    // Remove the # if present
+    hex = hex.replace(/^#/, '');
+    
+    // Parse the hex values
+    let r = 0, g = 0, b = 0;
+    if (hex.length === 3) {
+      r = parseInt(hex.charAt(0) + hex.charAt(0), 16);
+      g = parseInt(hex.charAt(1) + hex.charAt(1), 16);
+      b = parseInt(hex.charAt(2) + hex.charAt(2), 16);
+    } else if (hex.length === 6) {
+      r = parseInt(hex.substring(0, 2), 16);
+      g = parseInt(hex.substring(2, 4), 16);
+      b = parseInt(hex.substring(4, 6), 16);
+    } else {
+      return null; // Invalid hex
+    }
+    
+    return { r, g, b };
   };
 
   // Helper function to convert hex to HSL
@@ -133,7 +175,7 @@ const ThemeColorPicker: React.FC = () => {
         <Button 
           variant="outline" 
           size="icon"
-          className="rounded-full bg-background/50 backdrop-blur-sm hover:bg-accent/80 relative"
+          className="btn-circle bg-background/50 backdrop-blur-sm hover:bg-accent/80 relative"
         >
           <Paintbrush className="h-4 w-4" />
           <div className="absolute -bottom-1 -right-1 flex gap-0.5">
@@ -142,10 +184,10 @@ const ThemeColorPicker: React.FC = () => {
           </div>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-72" align="end">
+      <PopoverContent className="w-72 glass-card" align="end">
         <div className="space-y-4">
           <h4 className="font-medium text-sm">Escolha um tema</h4>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             {predefinedThemes.map((theme) => (
               <Button
                 key={theme.name}
@@ -170,7 +212,7 @@ const ThemeColorPicker: React.FC = () => {
                 <input
                   id="primary-color"
                   type="color"
-                  className="w-full h-8 cursor-pointer rounded border"
+                  className="w-full h-8 cursor-pointer rounded border enhanced-input"
                   value={customColors.primary}
                   onChange={(e) => {
                     updateThemeColors({
@@ -185,7 +227,7 @@ const ThemeColorPicker: React.FC = () => {
                 <input
                   id="secondary-color"
                   type="color"
-                  className="w-full h-8 cursor-pointer rounded border"
+                  className="w-full h-8 cursor-pointer rounded border enhanced-input"
                   value={customColors.secondary}
                   onChange={(e) => {
                     updateThemeColors({
@@ -200,7 +242,7 @@ const ThemeColorPicker: React.FC = () => {
                 <input
                   id="background-color"
                   type="color"
-                  className="w-full h-8 cursor-pointer rounded border"
+                  className="w-full h-8 cursor-pointer rounded border enhanced-input"
                   value={customColors.background}
                   onChange={(e) => {
                     updateThemeColors({

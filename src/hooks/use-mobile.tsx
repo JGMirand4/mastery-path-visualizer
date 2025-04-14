@@ -1,26 +1,51 @@
 
 import * as React from "react"
 
-const MOBILE_BREAKPOINT = 768
+export const BREAKPOINTS = {
+  xs: 480,
+  sm: 640,
+  md: 768,
+  lg: 1024,
+  xl: 1280,
+  '2xl': 1536
+};
 
-export function useIsMobile() {
-  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
+export type Breakpoint = keyof typeof BREAKPOINTS;
+
+export function useBreakpoint(breakpoint: Breakpoint): boolean {
+  const [isLargerThan, setIsLargerThan] = React.useState<boolean | undefined>(undefined);
 
   React.useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+    const checkBreakpoint = () => {
+      setIsLargerThan(window.innerWidth >= BREAKPOINTS[breakpoint]);
     }
     
     // Check on mount
-    checkIfMobile()
+    checkBreakpoint();
     
     // Set up listener for screen size changes
-    window.addEventListener("resize", checkIfMobile)
+    window.addEventListener("resize", checkBreakpoint);
     
     // Clean up
-    return () => window.removeEventListener("resize", checkIfMobile)
-  }, [])
+    return () => window.removeEventListener("resize", checkBreakpoint);
+  }, [breakpoint]);
 
   // Return true or false, never undefined after first render
-  return isMobile === undefined ? false : isMobile
+  return isLargerThan === undefined ? false : isLargerThan;
+}
+
+export function useIsMobile() {
+  const isMobile = !useBreakpoint('md');
+  return isMobile;
+}
+
+export function useIsTablet() {
+  const isLargerThanMobile = useBreakpoint('md');
+  const isSmallerThanDesktop = !useBreakpoint('lg');
+  
+  return isLargerThanMobile && isSmallerThanDesktop;
+}
+
+export function useIsDesktop() {
+  return useBreakpoint('lg');
 }

@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -20,8 +19,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter", "sans-serif"],
+        sans: ["Montserrat", "Inter", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
+        body: ["Open Sans", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -62,7 +62,6 @@ export default {
           "in-progress": "hsl(var(--in-progress))",
           "completed": "hsl(var(--completed))",
         },
-        // Custom app colors
         roadmap: {
           dark: "#0A0F1C",
           neon: "#10F3AF",
@@ -70,6 +69,10 @@ export default {
           blue: "#38BDF8",
           yellow: "#FFB020",
           green: "#22C55E",
+          electric: "#00E5FF",
+          cyber: "#00FFC8",
+          slate: "#1E293B",
+          graphite: "#334155",
         },
       },
       borderRadius: {
@@ -141,7 +144,23 @@ export default {
         "rotate-in": {
           "0%": { transform: "rotate(-10deg) scale(0.95)", opacity: "0" },
           "100%": { transform: "rotate(0deg) scale(1)", opacity: "1" }
-        }
+        },
+        "circuit-pulse": {
+          "0%, 100%": { opacity: "0.3", transform: "scale(1)" },
+          "50%": { opacity: "0.7", transform: "scale(1.03)" }
+        },
+        "data-flow": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" }
+        },
+        "module-appear": {
+          "0%": { transform: "translateY(20px)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" }
+        },
+        "tech-breathe": {
+          "0%, 100%": { boxShadow: "0 0 5px 2px rgba(var(--primary-rgb), 0.3)" },
+          "50%": { boxShadow: "0 0 15px 5px rgba(var(--primary-rgb), 0.6)" }
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -159,12 +178,22 @@ export default {
         "morph-to-card": "morph-to-card 0.5s ease-out forwards",
         "scale-in": "scale-in 0.3s ease-out",
         "scale-out": "scale-out 0.3s ease-out",
-        "rotate-in": "rotate-in 0.5s ease-out"
+        "rotate-in": "rotate-in 0.5s ease-out",
+        "circuit-pulse": "circuit-pulse 4s ease-in-out infinite",
+        "data-flow": "data-flow 8s linear infinite",
+        "module-appear": "module-appear 0.6s ease-out forwards",
+        "tech-breathe": "tech-breathe 3s infinite",
       },
       boxShadow: {
         'glow': '0 0 10px 0 rgba(var(--primary-rgb), 0.3)',
         'glow-lg': '0 0 20px 5px rgba(var(--primary-rgb), 0.4)',
-      }
+        'neo': '5px 5px 10px rgba(0, 0, 0, 0.1), -5px -5px 10px rgba(255, 255, 255, 0.07)',
+        'inner-glow': 'inset 0 0 15px 0 rgba(var(--primary-rgb), 0.2)',
+      },
+      backgroundImage: {
+        'gradient-tech': 'linear-gradient(135deg, rgba(var(--primary-rgb), 0.05) 0%, rgba(var(--secondary-rgb), 0.05) 100%)',
+        'circuit-pattern': "url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMyMjIiIGZpbGwtb3BhY2l0eT0iLjA1Ij48cGF0aCBkPSJNMzYgMzRoLTJ2LTRoMnYtOGgtMnYtNGgxMnY0aC0ydjhoMnY0aC0ydjRoLTh2LTR6bTAgMGgydjRoLTJ2LTR6Ii8+PC9nPjwvZz48L3N2Zz4=')",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
